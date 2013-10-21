@@ -1,0 +1,16 @@
+.DS_Store
+.classpath
+.cproject
+.project
+.settings/
+AndroidManifest.xml
+assets/
+bin/
+gen/
+libs/
+lint.xml
+obj/
+proguard.cfg
+project.properties
+res/
+src/
