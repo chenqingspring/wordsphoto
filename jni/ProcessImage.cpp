@@ -130,11 +130,7 @@ extern "C" {
 
 
 
-        Canny(grayImg, grayImg, 80, 90, 7);//�����grayImg�Ƕ�ֵͼ��
-
-
-
-        //������ĸ����
+        Canny(grayImg, grayImg, 80, 90, 7);
 
         int fontNumber = 7;
 
@@ -217,10 +213,6 @@ extern "C" {
                 if (n == 5) zoomrate = 0.5;
                 if (n == 6) zoomrate = 0.4;
 
-
-
-
-
             }
 
 
@@ -232,33 +224,11 @@ extern "C" {
 
         }
 
-
-
-
-
-
-
-
         //jint *grayImgbuf;
         //jint *fourChannelsGraybuf;
 
-
-
         //grayImgbuf = env->GetIntArrayElements(JcolorImgbuf, false);
         //fourChannelsGraybuf = env->GetIntArrayElements(JcolorImgbuf, false);
-
-
-
-
-
-
-
-        //�Խ�����������Ԥ����
-
-
-
-
-        //�Բ�ɫͼ�����Աȶ�����
 
         for (int i = 0; i < colorZoomImg.rows; i++)
             for (int j = 0; j < colorZoomImg.cols; j++)
@@ -317,10 +287,6 @@ extern "C" {
 
             }
 
-        //��ԭͼƬ�Ŵ�����д��?
-
-
-
         /*Mat colorImg_larger = colorImg.clone();
 
         resize(colorImg_larger,colorImg_larger, Size(round(3*colorImg.cols), round(3*colorImg.rows)), 0, 0, INTER_LINEAR );
@@ -337,8 +303,6 @@ extern "C" {
 
         Mat blackBackGround(colorZoomImg.size(), CV_MAKETYPE(colorZoomImg.depth(), 4));
 
-
-        //��ɫ���
 
         for (int n = 0; n < blackBackGround.rows; n++)
             for (int m = 0; m < blackBackGround.cols; m++)
@@ -361,9 +325,6 @@ extern "C" {
         //Mat fontGray = fontGrayList[10].clone();
         // Mat fontMask = fontMaskList[10].clone();
 
-
-
-        ///////////////////////////////���һ����////////////////////////////////////
         srand( (unsigned)time( NULL ) );
 
         int a;
@@ -569,19 +530,10 @@ extern "C" {
 
                     }
 
-
-
-
-
                 }
 
         }
 
-
-
-
-
-        ///////////////////////////////��������////////////////////////////////////
         a = rand() % (len - 1);
         caseNumber = fontNumber * a + 6;
 
@@ -680,8 +632,6 @@ extern "C" {
 
             }
 
-
-        //�ѵ�ͨ���ĻҶ�ͼ�񸳸��ɫͼ��Ϊ���ý�����colorImgbuf��ʾ�Ҷ�ͼ��
         for (int i = 0; i < colorZoomImg.rows; i++)
         {
             for (int j = 0; j < colorZoomImg.cols; j++)
@@ -703,7 +653,7 @@ extern "C" {
         grayImg.release();
         colorImg.release();
 
-        delete[] fontGrayList;//ΪʲôҪ��delete���� http://www.chinaunix.net/jh/23/311058.html
+        delete[] fontGrayList;//http://www.chinaunix.net/jh/23/311058.html
         delete[] fontMaskList;
 
 
