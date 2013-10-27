@@ -157,13 +157,9 @@ extern "C" {
             fontW = env->CallIntMethod(obj_matrix, matrix_getWidth);
             fontH = env->CallIntMethod(obj_matrix, matrix_getHeight);
 
-
-
             fontImgbuf = env->GetIntArrayElements(JfontImgbuf, false);
 
-
             Mat fontGray(fontH, fontW, CV_8UC4, (unsigned char *)fontImgbuf);
-
 
             Mat fontMask = fontGray.clone();
 
