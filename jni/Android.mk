@@ -6,6 +6,8 @@ include OpenCV-2.3.1/share/OpenCV/OpenCV.mk
 
 
 LOCAL_MODULE    := ProcessImage
-LOCAL_SRC_FILES := ProcessImage.cpp
+LOCAL_SRC_FILES := ProcessImage.cpp \
+					processc.cpp
+LOCAL_LDLIBS := -llog
 
 include $(BUILD_SHARED_LIBRARY)
