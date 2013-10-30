@@ -6,6 +6,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <android/log.h>
+#ifndef     LOG_TAG
+#define     LOG_TAG "hello-jni"
+#endif
+#define     LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define     LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , LOG_TAG, __VA_ARGS__)
+#define     LOGI(...) __android_log_print(ANDROID_LOG_INFO   , LOG_TAG, __VA_ARGS__)
+#define     LOGW(...) __android_log_print(ANDROID_LOG_WARN   , LOG_TAG, __VA_ARGS__)
+#define     LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , LOG_TAG, __VA_ARGS__)
 
 using namespace cv;
 jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
@@ -13,7 +22,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 	jintArray JcolorImgbuf;
 	int w;
 	int h;
-	jintArray JfontImgbuf;
+
 	int fontW;
 	int fontH;
 
@@ -27,24 +36,20 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 	jint len = env->CallIntMethod(matrixList, arraylist_size);
 
-	//for(int i=0;i<len;i++){
-	jstring jInputImagePath = (jstring)env->CallObjectMethod(matrixList, arraylist_get, 0);
-	__android_log_print(ANDROID_LOG_INFO, "JNIMsg", "%s, jInputImagePath==%s",__FUNCTION__,jInputImagePath);
-	jboolean isCopy;
-	const char *inputImagePath = env->GetStringUTFChars(jInputImagePath, false);
-
-
-	Mat colorImg = imread(inputImagePath);
+	for(int i=0;i<len;i++){
+	jstring jInputImagePath = (jstring)env->CallObjectMethod(matrixList, arraylist_get, i);
+	                const char* inputImagePath = (char*)env->GetStringUTFChars(jInputImagePath,0);
+	                LOGI( "jni image path is  %s",inputImagePath);
+	}
+	Mat colorImg = imread("/mnt/sdcard/com.wordsphoto/system/temp/image_will_process.jpg");
 
 	int zoomlever = 2;
 
-	Mat colorZoomImg(colorImg.cols * zoomlever, colorImg.rows * zoomlever, CV_8UC4);
+	Mat colorZoomImg(colorImg.rows * zoomlever, colorImg.cols * zoomlever, CV_8UC4);
 
 	resize(colorImg, colorZoomImg,
 			Size(round(colorZoomImg.cols), round(colorZoomImg.rows)), 0, 0,
 			INTER_NEAREST);
-
-	//colorZoomImg = colorImg.clone();
 
 	Mat grayImg = colorZoomImg.clone();
 	//Mat fourChannelsGrayImg = colorImg.clone();
@@ -88,13 +93,11 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 	int fontNumber = 7;
 
-	Mat *fontGrayList = new Mat[(len - 1) * fontNumber];
+	Mat *fontGrayList = new Mat[(len - 2) * fontNumber];
 
-	Mat *fontMaskList = new Mat[(len - 1) * fontNumber];
+	Mat *fontMaskList = new Mat[(len - 2) * fontNumber];
 
-	jint *fontImgbuf;
-
-	for (int i = 1; i < len; i++) {
+	for (int i = 1; i < len - 1; i++) {
 
 		jstring jFontsPath = (jstring)env->CallObjectMethod(matrixList, arraylist_get, i);
 
@@ -105,16 +108,9 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		Mat fontMask = fontGray.clone();
 
-		cvtColor(fontGray, fontGray, COLOR_BGRA2GRAY, 4);
-
 		for (int n = 0; n < fontGray.rows; n++)
 			for (int m = 0; m < fontGray.cols; m++) {
-
-				(fontGray.data + fontGray.step * n)[m * fontGray.channels()] =
-						255
-								- (fontGray.data + fontGray.step * n)[m
-										* fontGray.channels()];
-
+				(fontGray.data + fontGray.step * n)[m * fontGray.channels()] = 255 - (fontGray.data + fontGray.step * n)[m * fontGray.channels()];
 			}
 		//adaptiveThreshold(fontGray, fontMask, 10, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 5, 0);
 
@@ -231,6 +227,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 	 Canny(cannyImg, cannyImg, 80, 90, 3);*/
 
 	//Mat blackBackGround = colorZoomImg.clone();
+
 	Mat blackBackGround(colorZoomImg.size(),
 			CV_MAKETYPE(colorZoomImg.depth(), 4));
 
@@ -270,14 +267,14 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		if (1 == k) {
 
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 			caseNumber = fontNumber * a;
 			step_length = 15;
 
 		}
 
 		if (2 == k) {
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 
 			caseNumber = fontNumber * a + 1;
 
@@ -285,7 +282,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		}
 		if (3 == k) {
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 
 			caseNumber = fontNumber * a + 2;
 
@@ -293,7 +290,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		}
 		if (4 == k) {
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 
 			caseNumber = fontNumber * a + 3;
 
@@ -301,7 +298,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		}
 		if (5 == k) {
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 
 			caseNumber = fontNumber * a + 4;
 
@@ -309,7 +306,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 		}
 		if (6 == k) {
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 
 			caseNumber = fontNumber * a + 5;
 
@@ -423,33 +420,33 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 				}
 
 				if (1 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a;
 
 				}
 
 				if (2 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a + 1;
 
 				}
 				if (3 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a + 2;
 
 				}
 				if (4 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a + 3;
 
 				}
 				if (5 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a + 4;
 
 				}
 				if (6 == k) {
-					a = rand() % (len - 1);
+					a = rand() % (len - 2);
 					caseNumber = fontNumber * a + 5;
 
 				}
@@ -458,7 +455,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 	}
 
-	a = rand() % (len - 1);
+	a = rand() % (len - 2);
 	caseNumber = fontNumber * a + 6;
 
 	for (int i = 0; i < grayImg.rows - fontGrayList[caseNumber].rows; i = i + 2)
@@ -561,7 +558,7 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 
 					}
 			}
-			a = rand() % (len - 1);
+			a = rand() % (len - 2);
 			caseNumber = fontNumber * a + 6;
 
 		}
@@ -593,14 +590,11 @@ jboolean wordPhotoProcess(JNIEnv *env, jobject obj, jobject matrixList){
 	delete[] fontGrayList;          //http://www.chinaunix.net/jh/23/311058.html
 	delete[] fontMaskList;
 
-
-	__android_log_print(ANDROID_LOG_INFO, "JNIMsg", "%s, JcolorZoomImgbuf==%d",__FUNCTION__,time(0));
-		bool isWriteSuccess = imwrite("/sdcard/test.jpg",colorZoomImg);
-	__android_log_print(ANDROID_LOG_INFO, "JNIMsg", "%s, JcolorZoomImgbuf==%d",__FUNCTION__,time(0));
-
-
-
-	env->ReleaseIntArrayElements(JfontImgbuf, fontImgbuf, 0);
+	jstring jOutputImagePath = (jstring)env->CallObjectMethod(matrixList, arraylist_get, len-1);
+	const char* outputImagePath = (char*)env->GetStringUTFChars(jOutputImagePath,0);
+	__android_log_print(ANDROID_LOG_INFO, "JNIMsg", "%s, outputImagePath==%s",__FUNCTION__,outputImagePath);
+		bool isWriteSuccess = imwrite(outputImagePath,colorZoomImg);
+	__android_log_print(ANDROID_LOG_INFO, "JNIMsg", "%s, outputImagePath==%s",__FUNCTION__,outputImagePath);
 
 	return isWriteSuccess;
 
